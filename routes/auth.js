@@ -7,9 +7,16 @@ const template = require('../lib/template.js');
 const { response } = require('express');
 
 router.get('/login', (req, res) => {
+    var fmsg = req.flash();
+    var feedback = '';
+    if(fmsg.err){
+      feedback = fmsg.error[0];
+    }
+
     var title = 'WEB - login';
     var list = template.list(req.list);
     var html = template.HTML(title, list, `
+      <div style="color:red;">${feedback}</div>
       <form action="/auth/login_process" method="post">
         <p><input type="text" name="email" placeholder="email"></p>
         <p><input type="password" name="pwd" placeholder="password"></p>
@@ -20,6 +27,14 @@ router.get('/login', (req, res) => {
     `, '');
     res.send(html);
   });
+
+router.get('/logout', (req, res, next) => {
+  req.logout((err) =>{ // req.logout은 callback function으로 함수를 인자로 넣을 것
+    if(err) { return next(err);}
+    res.redirect('/');
+  });
+  
+});
 
 
 

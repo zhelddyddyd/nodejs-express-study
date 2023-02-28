@@ -8,6 +8,7 @@ const helmet = require('helmet');
 app.use(helmet());
 var session = require('express-session');
 var FileStore = require('session-file-store')(session)
+const flash = require('connect-flash');
 
 const indexrouter = require('./routes/index');
 const topicRouter = require('./routes/topic');
@@ -23,6 +24,7 @@ app.use(session({
   saveUninitialized: true,
   store: new FileStore()
 }))
+app.use(flash());
 
 const authData = {
   email:'stay@naver.com',
@@ -76,7 +78,9 @@ passport.use(new LocalStrategy(
 app.post('/auth/login_process',
   passport.authenticate('local', { // 전략은 로그인 방식 (id/pwd 를 사용하는 것)
     successRedirect: '/',
-    failureRedirect: '/auth/login'
+    failureRedirect: '/auth/login',
+    failureFlash: true,
+    successFlash: true
   })
 );
 
